@@ -79,6 +79,11 @@ function Navbar() {
                   <i className="fas fa-tachometer-alt"></i> Dashboard
                 </Link>
               </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/admin/orders">
+                  <i className="fas fa-shopping-bag"></i> Manage Orders
+                </Link>
+              </li>
             </>
           )}
           {isCustomer() && (

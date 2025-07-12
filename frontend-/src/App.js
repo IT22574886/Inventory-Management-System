@@ -20,6 +20,10 @@ import Cart from "./Components/Shop/Cart";
 
 // Admin Components
 import Dashboard from "./Components/Admin/Dashboard";
+import AdminOrderManagement from "./Components/Admin/AdminOrderManagement";
+
+// Order Management Component
+import OrderManagement from "./Components/OrderManagement/OrderManagement";
 
 function App() {
   return (
@@ -81,6 +85,24 @@ function App() {
             element={
               <ProtectedRoute requireAuth={true} requireAdmin={true}>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/orders"
+            element={
+              <ProtectedRoute requireAuth={true} requireAdmin={true}>
+                <AdminOrderManagement />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Order Management Routes */}
+          <Route
+            path="/orders"
+            element={
+              <ProtectedRoute requireAuth={true}>
+                <OrderManagement />
               </ProtectedRoute>
             }
           />

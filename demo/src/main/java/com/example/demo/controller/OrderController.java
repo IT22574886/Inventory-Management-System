@@ -75,8 +75,19 @@ public class OrderController {
                 orderItem.setOrder(savedOrder);
                 orderItem.setProduct(product);
                 orderItem.setQuantity(itemRequest.getQuantity());
-                orderItem.setUnitPrice(product.getPrice());
-                orderItem.setTotalPrice(itemRequest.getQuantity() * product.getPrice());
+
+                // Use selling price directly since it's always set
+                Double unitPrice = product.getSellingPrice();
+
+                // Validate price
+                if (unitPrice == null || unitPrice <= 0) {
+                    return ResponseEntity.badRequest().body(
+                            "Product '" + product.getItemName() + "' has no valid price set. Please contact admin.");
+                }
+
+                orderItem.setUnitPrice(unitPrice);
+                // Let OrderItem calculate the total price
+                orderItem.setQuantity(itemRequest.getQuantity());
 
                 // Update product stock
                 product.setItemQuantity(String.valueOf(currentStock - itemRequest.getQuantity()));

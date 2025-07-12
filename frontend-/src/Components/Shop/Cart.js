@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import "./Shop.css";
 
@@ -7,7 +7,15 @@ function Cart() {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const { isAuthenticated } = useAuth();
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [showCheckoutForm, setShowCheckoutForm] = useState(false);
+  const [checkoutForm, setCheckoutForm] = useState({
+    shippingAddress: "",
+    paymentMethod: "Credit Card",
+    notes: ""
+  });
+  const { isAuthenticated, user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadCart();
@@ -71,22 +79,87 @@ function Cart() {
     }
   };
 
-  const checkout = () => {
-    try {
-      if (!isAuthenticated()) {
-        setError("Please login to checkout");
-        return;
-      }
+  const handleCheckoutClick = () => {
+    if (!isAuthenticated()) {
+      setError("Please login to checkout");
+      return;
+    }
+    setShowCheckoutForm(true);
+  };
 
-      // For now, just clear the cart and show success message
-      // In a real application, you would send the order to the backend
-      setCartItems([]);
-      localStorage.removeItem("cart");
-      alert("Order placed successfully! Thank you for your purchase.");
+  const handleCheckoutFormChange = (e) => {
+    setCheckoutForm({
+      ...checkoutForm,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const placeOrder = async () => {
+    if (!user) {
+      setError("Please login to place an order");
+      return;
+    }
+
+    if (!checkoutForm.shippingAddress.trim()) {
+      setError("Please enter a shipping address");
+      return;
+    }
+
+    setCheckoutLoading(true);
+    setError("");
+
+    try {
+      // Prepare order data
+      const orderData = {
+        userId: user.id,
+        shippingAddress: checkoutForm.shippingAddress,
+        paymentMethod: checkoutForm.paymentMethod,
+        notes: checkoutForm.notes,
+        orderItems: cartItems.map(item => ({
+          productId: item.id,
+          quantity: item.quantity
+        }))
+      };
+
+      // Send order to backend
+      const response = await fetch('http://localhost:8080/api/orders/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData)
+      });
+
+      if (response.ok) {
+        const order = await response.json();
+        
+        // Clear cart
+        setCartItems([]);
+        localStorage.removeItem("cart");
+        
+        // Show success and redirect to orders page
+        alert(`Order placed successfully! Order #${order.id}`);
+        navigate('/orders');
+      } else {
+        const errorData = await response.text();
+        setError(`Failed to place order: ${errorData}`);
+      }
     } catch (error) {
       setError("Failed to place order. Please try again.");
       console.error("Error placing order:", error);
+    } finally {
+      setCheckoutLoading(false);
     }
+  };
+
+  const cancelCheckout = () => {
+    setShowCheckoutForm(false);
+    setCheckoutForm({
+      shippingAddress: "",
+      paymentMethod: "Credit Card",
+      notes: ""
+    });
+    setError("");
   };
 
   // Calculate totals using selling price
@@ -279,10 +352,111 @@ function Cart() {
                   </Link>
                   <button
                     className="btn btn-primary checkout-btn"
-                    onClick={checkout}
+                    onClick={handleCheckoutClick}
                   >
                     <i className="fas fa-credit-card"></i> Proceed to Checkout
                   </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Checkout Form Modal */}
+          {showCheckoutForm && (
+            <div className="modal-overlay">
+              <div className="modal-content checkout-modal">
+                <div className="modal-header">
+                  <h3>Complete Your Order</h3>
+                  <button className="close-btn" onClick={cancelCheckout}>
+                    ×
+                  </button>
+                </div>
+                
+                <div className="checkout-form">
+                  <div className="form-group">
+                    <label htmlFor="shippingAddress">Shipping Address *</label>
+                    <textarea
+                      id="shippingAddress"
+                      name="shippingAddress"
+                      value={checkoutForm.shippingAddress}
+                      onChange={handleCheckoutFormChange}
+                      placeholder="Enter your complete shipping address"
+                      required
+                      rows="3"
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="paymentMethod">Payment Method</label>
+                    <select
+                      id="paymentMethod"
+                      name="paymentMethod"
+                      value={checkoutForm.paymentMethod}
+                      onChange={handleCheckoutFormChange}
+                    >
+                      <option value="Credit Card">Credit Card</option>
+                      <option value="Debit Card">Debit Card</option>
+                      <option value="PayPal">PayPal</option>
+                      <option value="Cash on Delivery">Cash on Delivery</option>
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="notes">Order Notes (Optional)</label>
+                    <textarea
+                      id="notes"
+                      name="notes"
+                      value={checkoutForm.notes}
+                      onChange={handleCheckoutFormChange}
+                      placeholder="Any special instructions or notes for your order"
+                      rows="2"
+                    />
+                  </div>
+
+                  <div className="order-summary">
+                    <h4>Order Summary</h4>
+                    <div className="summary-item">
+                      <span>Subtotal:</span>
+                      <span>${subtotal.toFixed(2)}</span>
+                    </div>
+                    <div className="summary-item">
+                      <span>Tax (10%):</span>
+                      <span>${tax.toFixed(2)}</span>
+                    </div>
+                    <div className="summary-item">
+                      <span>Shipping:</span>
+                      <span>{shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}</span>
+                    </div>
+                    <div className="summary-item total">
+                      <span>Total:</span>
+                      <span>${total.toFixed(2)}</span>
+                    </div>
+                  </div>
+
+                  <div className="checkout-actions">
+                    <button 
+                      className="btn btn-secondary" 
+                      onClick={cancelCheckout}
+                      disabled={checkoutLoading}
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      className="btn btn-primary" 
+                      onClick={placeOrder}
+                      disabled={checkoutLoading}
+                    >
+                      {checkoutLoading ? (
+                        <>
+                          <i className="fas fa-spinner fa-spin"></i> Processing...
+                        </>
+                      ) : (
+                        <>
+                          <i className="fas fa-credit-card"></i> Place Order
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

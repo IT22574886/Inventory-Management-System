@@ -70,7 +70,10 @@ public class OrderItem {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
-        this.totalPrice = quantity * unitPrice;
+        // Only calculate totalPrice if both quantity and unitPrice are not null
+        if (quantity != null && unitPrice != null) {
+            this.totalPrice = quantity * unitPrice;
+        }
     }
 
     public Double getUnitPrice() {
@@ -79,7 +82,10 @@ public class OrderItem {
 
     public void setUnitPrice(Double unitPrice) {
         this.unitPrice = unitPrice;
-        this.totalPrice = quantity * unitPrice;
+        // Only calculate totalPrice if both quantity and unitPrice are not null
+        if (quantity != null && unitPrice != null) {
+            this.totalPrice = quantity * unitPrice;
+        }
     }
 
     public Double getTotalPrice() {

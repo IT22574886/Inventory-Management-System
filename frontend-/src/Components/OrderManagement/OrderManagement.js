@@ -1,22 +1,20 @@
-import React, { useState, useEffect, useContext } from "react";
-import { AuthContext } from "../../context/AuthContext";
+import React, { useState, useEffect } from "react";
+import { useAuth } from "../../context/AuthContext";
 import "./OrderManagement.css";
 
 const OrderManagement = () => {
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showOrderDetails, setShowOrderDetails] = useState(false);
-  const [statistics, setStatistics] = useState(null);
 
   const API_BASE_URL = "http://localhost:8080/api";
 
   useEffect(() => {
     if (user) {
       fetchOrders();
-      fetchStatistics();
     }
   }, [user]);
 
@@ -34,18 +32,6 @@ const OrderManagement = () => {
       setError("Error fetching orders: " + err.message);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const fetchStatistics = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/orders/statistics`);
-      if (response.ok) {
-        const data = await response.json();
-        setStatistics(data);
-      }
-    } catch (err) {
-      console.error("Error fetching statistics:", err);
     }
   };
 
@@ -147,33 +133,6 @@ const OrderManagement = () => {
         <div className="error-message">
           {error}
           <button onClick={() => setError("")}>×</button>
-        </div>
-      )}
-
-      {/* Statistics Dashboard */}
-      {statistics && (
-        <div className="statistics-dashboard">
-          <h3>Order Statistics</h3>
-          <div className="stats-grid">
-            <div className="stat-card">
-              <span className="stat-number">{statistics.totalOrders}</span>
-              <span className="stat-label">Total Orders</span>
-            </div>
-            <div className="stat-card">
-              <span className="stat-number">{statistics.pendingOrders}</span>
-              <span className="stat-label">Pending</span>
-            </div>
-            <div className="stat-card">
-              <span className="stat-number">{statistics.deliveredOrders}</span>
-              <span className="stat-label">Delivered</span>
-            </div>
-            <div className="stat-card">
-              <span className="stat-number">
-                {formatPrice(statistics.totalRevenue)}
-              </span>
-              <span className="stat-label">Total Revenue</span>
-            </div>
-          </div>
         </div>
       )}
 
