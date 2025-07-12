@@ -88,6 +88,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+<<<<<<< HEAD
           <Route
             path="/admin/orders"
             element={
@@ -106,6 +107,9 @@ function App() {
               </ProtectedRoute>
             }
           />
+=======
+           
+>>>>>>> fc0d9a0357414b304cd0815e1833d39e773eb0c1
         </Routes>
       </React.Fragment>
     </AuthProvider>
