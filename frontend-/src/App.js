@@ -84,7 +84,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-           
         </Routes>
       </React.Fragment>
     </AuthProvider>
