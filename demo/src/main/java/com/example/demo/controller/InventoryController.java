@@ -106,7 +106,7 @@ public class InventoryController {
             return unauthorizedResponse();
         }
         // 1. Use relative path from project root
-        String folder = "/demo/uploads/"; // Changed from "src/main/uploads/"
+        String folder = "demo/uploads/"; // Changed from "src/main/uploads/"
 
         // 2. Basic filename sanitization
         String originalFilename = file.getOriginalFilename();
@@ -162,9 +162,9 @@ public class InventoryController {
     }
 
     // Get item image only
-    private final String UPLOAD_DIR = "/demo/uploads/";
+    private final String UPLOAD_DIR = "demo/uploads/";
 
-    @GetMapping("/demo/uploads/{filename}")
+    @GetMapping("demo/uploads/{filename}")
     public ResponseEntity<FileSystemResource> getImage(@PathVariable String filename) {
         File file = new File(UPLOAD_DIR + filename);
         if (!file.exists()) {
@@ -277,7 +277,7 @@ public class InventoryController {
         String itemImage = inventoryItem.getItemImage();
         if (itemImage != null && !itemImage.isEmpty()) {
             // Use the same folder path as other methods
-            File imageFile = new File("/demo/uploads/" + itemImage);
+            File imageFile = new File("demo/uploads/" + itemImage);
             if (imageFile.exists()) {
                 if (imageFile.delete()) {
                     System.out.println("Image Deleted: " + itemImage);

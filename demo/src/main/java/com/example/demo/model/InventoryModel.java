@@ -160,16 +160,7 @@ public class InventoryModel {
     public InventoryModel() {
     } // Required by JPA
 
-    public InventoryModel(Long id, String itemId, String itemName, String itemImage, String itemCategory,
-            String itemQuantity, String itemDetails) {
-        this.id = id;
-        this.itemId = itemId;
-        this.itemName = itemName;
-        this.itemImage = itemImage;
-        this.itemCategory = itemCategory;
-        this.itemQuantity = itemQuantity;
-        this.itemDetails = itemDetails;
-    }
+   
 
     // New constructor with shopping fields
     public InventoryModel(Long id, String itemId, String itemName, String itemImage, String itemCategory,
