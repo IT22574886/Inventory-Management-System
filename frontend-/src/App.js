@@ -84,14 +84,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-           <Route
-            path="/admin/dashboard"
-            element={
-              <ProtectedRoute requireAuth={true} requireAdmin={true}>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
+           
         </Routes>
       </React.Fragment>
     </AuthProvider>
