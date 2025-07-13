@@ -36,6 +36,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/shop" element={<ProductList />} />
+          <Route path="/shop" element={<ProductList />} />
 
           {/* Protected Customer Routes */}
           <Route
@@ -88,7 +89,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-<<<<<<< HEAD
           <Route
             path="/admin/orders"
             element={
@@ -107,9 +107,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-=======
-           
->>>>>>> fc0d9a0357414b304cd0815e1833d39e773eb0c1
         </Routes>
       </React.Fragment>
     </AuthProvider>
