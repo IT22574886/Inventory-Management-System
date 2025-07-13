@@ -36,7 +36,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/shop" element={<ProductList />} />
-          <Route path="/shop" element={<ProductList />} />
+          
 
           {/* Protected Customer Routes */}
           <Route
