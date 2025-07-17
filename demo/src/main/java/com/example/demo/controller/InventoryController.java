@@ -25,6 +25,10 @@ public class InventoryController {
     @Autowired
     private InventoryRepository inventoryRepository;
 
+    private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/demo/uploads/"; 
+
+
+
     // Authorization helper methods
     private boolean isAdmin(Map<String, Object> userData) {
         if (userData == null)
@@ -106,7 +110,7 @@ public class InventoryController {
             return unauthorizedResponse();
         }
         // 1. Use relative path from project root
-        String folder = "demo/uploads/"; // Changed from "src/main/uploads/"
+        String folder = UPLOAD_DIR;
 
         // 2. Basic filename sanitization
         String originalFilename = file.getOriginalFilename();
@@ -162,7 +166,7 @@ public class InventoryController {
     }
 
     // Get item image only
-    private final String UPLOAD_DIR = "demo/uploads/";
+    
 
     @GetMapping("demo/uploads/{filename}")
     public ResponseEntity<FileSystemResource> getImage(@PathVariable String filename) {
@@ -220,7 +224,7 @@ public class InventoryController {
 
             if (file != null && !file.isEmpty()) {
                 // Use the same folder path as the upload method
-                String folder = "/demo/uploads/";
+                String folder = "demo/uploads/";
 
                 // Sanitize filename like in the upload method
                 String originalFilename = file.getOriginalFilename();
